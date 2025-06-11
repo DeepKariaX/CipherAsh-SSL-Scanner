@@ -26,14 +26,6 @@ python app.py
 # Server runs on http://localhost:5000
 ```
 
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Architecture](#architecture)
-- [Usage](#usage)
-- [Security Analysis](#security-analysis)
-- [Contributing](#contributing)
-
 ## ✨ Features
 
 ### Core Security Analysis
