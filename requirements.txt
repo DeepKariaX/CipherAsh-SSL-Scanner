@@ -1,0 +1,4 @@
+# This file is used to specify the dependencies for the project.
+Flask~=3.1.1
+sslyze~=6.1.0
+flask-cors~=6.0.1

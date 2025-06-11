@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherAsh SSL Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        /* Initial Landing Page */
+        .landing-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .landing-card {
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .landing-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .landing-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1f2937;
+            letter-spacing: -1px;
+        }
+        
+        .landing-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .landing-form {
+            margin-bottom: 20px;
+        }
+        
+        .landing-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .landing-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .landing-button {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .landing-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .landing-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .landing-loading {
+            display: none;
+            margin-top: 20px;
+            color: #6b7280;
+        }
+        
+        /* Main App Container (Hidden Initially) */
+        .main-container {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .main-container.active {
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            padding: 24px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .brand-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .nav-menu {
+            padding: 16px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 15px;
+            color: #6b7280;
+        }
+        
+        .nav-item:hover {
+            background-color: #f9fafb;
+            color: #374151;
+        }
+        
+        .nav-item.active {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+        }
+        
+        .back-button {
+            margin: 16px 20px;
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+        
+        .back-button:hover {
+            background: #e5e7eb;
+        }
+        
+        /* Main Content */
+        .content {
+            flex: 1;
+            background-color: #f5f7fa;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .domain-display {
+            background: #f3f4f6;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .download-button {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+        }
+        
+        .download-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .main-content {
+            margin: 32px;
+        }
+        
+        .content-area {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            min-height: 500px;
+        }
+        
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+        }
+        
+        .protocols-content {
+            padding: 32px;
+        }
+        
+        .protocol-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .protocol-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .protocol-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-supported {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-deprecated {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-not-supported {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .error {
+            color: #dc2626;
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .cipher-list {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .cipher-item {
+            background-color: white;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .no-ciphers {
+            color: #059669;
+            font-style: italic;
+            text-align: center;
+            padding: 16px;
+        }
+        
+        /* Content sections styling */
+        .cert-card, .vuln-card, .feature-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .cert-field {
+            margin-bottom: 12px;
+        }
+        
+        .cert-label {
+            font-weight: 500;
+            color: #374151;
+            display: inline-block;
+            min-width: 120px;
+        }
+        
+        .cert-value {
+            color: #6b7280;
+        }
+        
+        .vuln-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .vuln-name {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .vuln-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .vuln-vulnerable {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .vuln-secure {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-container" id="landingPage">
+        <div class="landing-card">
+            <div class="landing-brand">
+                <h1 class="landing-title">CipherAsh</h1>
+            </div>
+            <p class="landing-subtitle">Comprehensive SSL/TLS Security Scanner<br>Analyze certificates, protocols, and vulnerabilities</p>
+            
+            <form id="scanForm" class="landing-form">
+                <input 
+                    type="text" 
+                    id="domain" 
+                    name="domain" 
+                    class="landing-input" 
+                    placeholder="Enter domain (e.g., google.com or https://example.com)" 
+                    required
+                >
+                <button type="submit" id="scanButton" class="landing-button">
+                    Start SSL/TLS Scan
+                </button>
+            </form>
+            
+            <div class="landing-loading" id="loading">
+                <p>🔍 Scanning SSL/TLS configuration... Please wait.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App (Hidden Initially) -->
+    <div class="main-container" id="mainApp">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-text">CipherAsh</div>
+            </div>
+            
+            <button class="back-button" onclick="goBackToLanding()">
+                ← New Scan
+            </button>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="switchTab('protocols')">
+                    <span class="nav-icon">🛡️</span>
+                    SSL/TLS Protocols
+                </button>
+                <button class="nav-item" onclick="switchTab('certificates')">
+                    <span class="nav-icon">📋</span>
+                    Certificates
+                </button>
+                <button class="nav-item" onclick="switchTab('vulnerabilities')">
+                    <span class="nav-icon">⚠️</span>
+                    Vulnerabilities
+                </button>
+                <button class="nav-item" onclick="switchTab('security')">
+                    <span class="nav-icon">🔒</span>
+                    Security Features
+                </button>
+                <button class="nav-item" onclick="switchTab('performance')">
+                    <span class="nav-icon">⚡</span>
+                    Performance Features
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="header">
+                <div class="header-left">
+                    <div class="domain-display" id="scannedDomain">Domain</div>
+                </div>
+                <button class="download-button" onclick="downloadReport()">
+                    <span>📥</span>
+                    Download Report
+                </button>
+            </div>
+
+            <div class="main-content">
+                <div class="content-area">
+                    <div class="content-header">
+                        <h2 class="content-title" id="contentTitle">SSL/TLS Protocols</h2>
+                    </div>
+                    
+                    <div id="contentBody" class="protocols-content">
+                        <div class="empty-state">
+                            Loading scan results...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentResults = null;
+        let activeTab = 'protocols';
+        let currentDomain = '';
+
+        document.getElementById('scanForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const domain = document.getElementById('domain').value.trim();
+            const button = document.getElementById('scanButton');
+            const loading = document.getElementById('loading');
+            
+            if (!domain) return;
+            
+            currentDomain = domain;
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Scanning...';
+            loading.style.display = 'block';
+            
+            try {
+                const response = await fetch('/scan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ domain: domain })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Scan failed');
+                }
+                
+                currentResults = data;
+                
+                // Switch to main app view
+                showMainApp();
+                
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            } finally {
+                // Reset loading state
+                button.disabled = false;
+                button.textContent = 'Start SSL/TLS Scan';
+                loading.style.display = 'none';
+            }
+        });
+        
+        function showMainApp() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            document.getElementById('scannedDomain').textContent = currentDomain;
+            
+            switchTab('protocols');
+        }
+        
+        function goBackToLanding() {
+            document.getElementById('landingPage').style.display = 'flex';
+            document.getElementById('mainApp').classList.remove('active');
+            
+            // Reset form
+            document.getElementById('domain').value = '';
+            currentResults = null;
+            currentDomain = '';
+        }
+        
+        function downloadReport() {
+            if (!currentResults || !currentResults.length) {
+                alert('No scan results available to download');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Colors matching the UI
+                const primaryBlue = [59, 130, 246];
+                const darkBlue = [29, 78, 216];
+                const textGray = [31, 41, 55];
+                const lightGray = [107, 114, 128];
+                const white = [255, 255, 255];
+
+                const result = currentResults[0];
+                let yPos = 30;
+
+                // Header with background (no logo)
+                doc.setFillColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                doc.rect(0, 0, 210, 40, 'F');
+
+                // Title only (no logo)
+                doc.setTextColor(white[0], white[1], white[2]);
+                doc.setFontSize(24);
+                doc.setFont('helvetica', 'bold');
+                doc.text('CipherAsh SSL/TLS Security Report', 20, 25);
+
+                yPos = 60;
+
+                // Domain and scan date
+                doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Domain: ${currentDomain}`, 20, yPos);
+
+                yPos += 12;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
+                doc.text(`Scan Date: ${new Date().toLocaleDateString()}`, 20, yPos);
+
+                yPos += 25;
+
+                // SSL/TLS Protocols Section
+                doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text('SSL/TLS Protocol Support', 20, yPos);
+
+                yPos += 15;
+
+                const protocols = [
+                    { key: 'tls_1_3', name: 'TLS 1.3' },
+                    { key: 'tls_1_2', name: 'TLS 1.2' },
+                    { key: 'tls_1_1', name: 'TLS 1.1' },
+                    { key: 'tls_1_0', name: 'TLS 1.0' },
+                    { key: 'ssl_3_0', name: 'SSL 3.0' },
+                    { key: 'ssl_2_0', name: 'SSL 2.0' }
+                ];
+
+                protocols.forEach(protocol => {
+                    const ciphers = result[protocol.key] || [];
+                    const isSupported = ciphers.length > 0 && !(ciphers[0] && ciphers[0].includes && ciphers[0].includes('Error'));
+
+                    doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`${protocol.name}:`, 25, yPos);
+
+                    if (isSupported) {
+                        doc.setTextColor(5, 150, 105);
+                    } else {
+                        doc.setTextColor(220, 38, 38);
+                    }
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(isSupported ? 'Supported' : 'Not Supported', 80, yPos);
+
+                    yPos += 10;
+                });
+
+                yPos += 20; // Uniform spacing after section
+
+                // Certificates Section
+                if (result.certificates && result.certificates.length > 0) {
+                    // Check if we need a new page
+                    if (yPos > 200) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+
+                    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Certificate Information', 20, yPos);
+
+                    yPos += 15;
+
+                    result.certificates.forEach((cert, index) => {
+                        if (typeof cert === 'object' && cert !== null) {
+                            doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                            doc.setFontSize(12);
+                            doc.setFont('helvetica', 'normal');
+
+                            // Handle long subject lines by splitting them
+                            const subject = cert.subject || 'N/A';
+                            if (subject.length > 60) {
+                                const subjectLines = doc.splitTextToSize(subject, 160);
+                                doc.text('Subject:', 25, yPos);
+                                doc.text(subjectLines, 70, yPos);
+                                yPos += subjectLines.length * 6;
+                            } else {
+                                doc.text(`Subject: ${subject}`, 25, yPos);
+                                yPos += 10;
+                            }
+
+                            doc.text(`Serial Number: ${cert.serial_number || 'N/A'}`, 25, yPos);
+                            yPos += 10;
+                            doc.text(`Public Key: ${cert.public_key_type || 'N/A'}`, 25, yPos);
+                            yPos += 10;
+                            doc.text(`Valid From: ${formatDate(cert.not_valid_before)}`, 25, yPos);
+                            yPos += 10;
+                            doc.text(`Valid Until: ${formatDate(cert.not_valid_after)}`, 25, yPos);
+                            yPos += 15;
+                        }
+                    });
+
+                    yPos += 20; // Uniform spacing after section
+                }
+
+                // Vulnerabilities Section (if available)
+                if (result.vulnerabilities && Object.keys(result.vulnerabilities).length > 0) {
+                    // Check if we need a new page
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+
+                    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Vulnerability Assessment', 20, yPos);
+
+                    yPos += 15;
+
+                    const vulnLabels = {
+                        'heartbleed': 'Heartbleed',
+                        'openssl_ccs_injection': 'OpenSSL CCS Injection',
+                        'robot': 'ROBOT Attack',
+                        'crime_compression': 'CRIME (Compression)',
+                        'session_renegotiation': 'Session Renegotiation'
+                    };
+
+                    Object.entries(result.vulnerabilities).forEach(([key, vuln]) => {
+                        if (yPos > 260) {
+                            doc.addPage();
+                            yPos = 30;
+                        }
+
+                        const isVulnerable = key === 'session_renegotiation' ? vuln.client_initiated_vulnerable : vuln.vulnerable;
+
+                        doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`${vulnLabels[key] || key.replace('_', ' ')}:`, 25, yPos);
+
+                        if (isVulnerable) {
+                            doc.setTextColor(220, 38, 38);
+                        } else {
+                            doc.setTextColor(5, 150, 105);
+                        }
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(vuln.status, 100, yPos);
+
+                        yPos += 10;
+                    });
+
+                    yPos += 20; // Uniform spacing after section
+                }
+
+                // Security Features Section
+                if (result.security_features && Object.keys(result.security_features).length > 0) {
+                    // Check if we need a new page
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+
+                    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Security Features', 20, yPos);
+
+                    yPos += 15;
+
+                    if (result.security_features.fallback_scsv) {
+                        doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('TLS Fallback SCSV:', 25, yPos);
+                        doc.text(result.security_features.fallback_scsv.status, 100, yPos);
+                        yPos += 10;
+                    }
+
+                    if (result.security_features.http_headers) {
+                        doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('HSTS:', 25, yPos);
+                        doc.text(result.security_features.http_headers.hsts ? 'Enabled' : 'Disabled', 100, yPos);
+                        yPos += 10;
+
+                        doc.text('HPKP:', 25, yPos);
+                        doc.text(result.security_features.http_headers.hpkp ? 'Enabled' : 'Disabled', 100, yPos);
+                        yPos += 10;
+                    }
+
+                    if (result.security_features.elliptic_curves && result.security_features.elliptic_curves.length > 0) {
+                        doc.text('Supported Elliptic Curves:', 25, yPos);
+                        yPos += 10;
+
+                        result.security_features.elliptic_curves.forEach((curve, index) => {
+                            if (yPos > 270) {
+                                doc.addPage();
+                                yPos = 30;
+                            }
+                            doc.text(`• ${curve}`, 30, yPos);
+                            yPos += 8;
+                        });
+                    }
+
+                    yPos += 20; // Uniform spacing after section
+                }
+
+                // Performance Features Section
+                if (result.performance_features && Object.keys(result.performance_features).length > 0) {
+                    // Check if we need a new page
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 30;
+                    }
+
+                    doc.setTextColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Performance Features', 20, yPos);
+
+                    yPos += 15;
+
+                    if (result.performance_features.session_resumption) {
+                        const sr = result.performance_features.session_resumption;
+                        doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('Session ID Resumption:', 25, yPos);
+                        doc.text(sr.session_id_resumption, 100, yPos);
+                        yPos += 10;
+
+                        doc.text('TLS Ticket Resumption:', 25, yPos);
+                        doc.text(sr.tls_ticket_resumption, 100, yPos);
+                        yPos += 10;
+                    }
+
+                    if (result.performance_features.tls_1_3_early_data) {
+                        doc.setTextColor(textGray[0], textGray[1], textGray[2]);
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('TLS 1.3 Early Data:', 25, yPos);
+                        doc.text(result.performance_features.tls_1_3_early_data.status, 100, yPos);
+                        yPos += 10;
+                    }
+                }
+
+                // Footer with proper spacing
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Generated by CipherAsh SSL Scanner - Page ${i} of ${pageCount}`, 20, 285);
+                }
+
+                // Create sanitized filename
+                const sanitizedDomain = sanitizeFilename(currentDomain);
+                const filename = `CipherAsh_${sanitizedDomain}_SSL_Report.pdf`;
+
+                // Save the PDF
+                doc.save(filename);
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF report. Please try again.');
+            }
+        }
+
+
+function sanitizeFilename(filename) {
+    // Remove protocol prefixes
+    let sanitized = filename.replace(/^https?:\/\//, '');
+    
+    // Remove trailing slashes
+    sanitized = sanitized.replace(/\/+$/, '');
+    
+    // Replace invalid characters with underscores
+    sanitized = sanitized.replace(/[<>:"/\\|?*\x00-\x1f\x80-\x9f]/g, '_');
+    
+    // Replace multiple consecutive underscores with single underscore
+    sanitized = sanitized.replace(/_+/g, '_');
+    
+    // Remove leading/trailing underscores and dots
+    sanitized = sanitized.replace(/^[._]+|[._]+$/g, '');
+    
+    // Truncate to reasonable length
+    if (sanitized.length > 100) {
+        sanitized = sanitized.substring(0, 100);
+    }
+    
+    return sanitized || 'unknown_domain';
+}
+
+        
+        function formatDate(isoString) {
+            try {
+                const date = new Date(isoString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return isoString || 'N/A';
+            }
+        }
+        
+        function switchTab(tabName) {
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event?.target?.classList.add('active') || document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            
+            activeTab = tabName;
+            
+            const titles = {
+                'protocols': 'SSL/TLS Protocols',
+                'certificates': 'Certificates',
+                'vulnerabilities': 'Vulnerabilities', 
+                'security': 'Security Features',
+                'performance': 'Performance Features'
+            };
+            
+            document.getElementById('contentTitle').textContent = titles[tabName];
+            
+            if (!currentResults) {
+                document.getElementById('contentBody').innerHTML = '<div class="empty-state">No scan results available</div>';
+                return;
+            }
+            
+            const result = currentResults[0];
+            
+            if (result.error) {
+                document.getElementById('contentBody').innerHTML = `<div class="error">${result.error}</div>`;
+                return;
+            }
+            
+            switch(tabName) {
+                case 'protocols':
+                    displayProtocols(result);
+                    break;
+                case 'certificates':
+                    displayCertificates(result);
+                    break;
+                case 'vulnerabilities':
+                    displayVulnerabilities(result);
+                    break;
+                case 'security':
+                    displaySecurityFeatures(result);
+                    break;
+                case 'performance':
+                    displayPerformanceFeatures(result);
+                    break;
+            }
+        }
+        
+        function displayProtocols(result) {
+            const protocols = [
+                { key: 'tls_1_3', name: 'TLS 1.3', modern: true },
+                { key: 'tls_1_2', name: 'TLS 1.2', modern: true },
+                { key: 'tls_1_1', name: 'TLS 1.1', deprecated: true },
+                { key: 'tls_1_0', name: 'TLS 1.0', insecure: true },
+                { key: 'ssl_3_0', name: 'SSL 3.0', insecure: true },
+                { key: 'ssl_2_0', name: 'SSL 2.0', insecure: true }
+            ];
+            
+            let html = '';
+            
+            protocols.forEach(protocol => {
+                const ciphers = result[protocol.key] || [];
+                const isSupported = ciphers.length > 0 && !ciphers[0]?.includes?.('Error');
+                
+                let statusClass = 'status-not-supported';
+                let statusText = 'Not supported';
+                
+                if (isSupported) {
+                    if (protocol.modern) {
+                        statusClass = 'status-supported';
+                        statusText = 'Supported';
+                    } else if (protocol.deprecated) {
+                        statusClass = 'status-deprecated';
+                        statusText = 'Deprecated';
+                    } else {
+                        statusClass = 'status-not-supported';
+                        statusText = 'Insecure';
+                    }
+                }
+                
+                html += `
+                    <div class="protocol-item">
+                        <div class="protocol-name">${protocol.name}</div>
+                        <div class="protocol-status ${statusClass}">${statusText}</div>
+                    </div>
+                `;
+                
+                if (isSupported && ciphers.length > 0) {
+                    html += `<div class="cipher-list">`;
+                    if (typeof ciphers[0] === 'string' && ciphers[0].includes('Error')) {
+                        html += `<div class="error">${ciphers[0]}</div>`;
+                    } else {
+                        ciphers.forEach(cipher => {
+                            html += `<div class="cipher-item">${cipher}</div>`;
+                        });
+                    }
+                    html += `</div>`;
+                }
+            });
+            
+            document.getElementById('contentBody').innerHTML = html;
+        }
+        
+        function displayCertificates(result) {
+            let html = '';
+            
+            if (!result.certificates || result.certificates.length === 0) {
+                html = '<div class="empty-state">No certificate information available</div>';
+            } else {
+                result.certificates.forEach((cert, index) => {
+                    if (typeof cert === 'string') {
+                        html += `<div class="error">${cert}</div>`;
+                    } else {
+                        html += `
+                            <div class="cert-card">
+                                <div class="cert-field">
+                                    <span class="cert-label">Subject:</span>
+                                    <span class="cert-value">${cert.subject || 'N/A'}</span>
+                                </div>
+                                <div class="cert-field">
+                                    <span class="cert-label">Serial Number:</span>
+                                    <span class="cert-value">${cert.serial_number || 'N/A'}</span>
+                                </div>
+                                <div class="cert-field">
+                                    <span class="cert-label">Public Key:</span>
+                                    <span class="cert-value">${cert.public_key_type || 'N/A'}</span>
+                                </div>
+                                <div class="cert-field">
+                                    <span class="cert-label">Valid From:</span>
+                                    <span class="cert-value">${formatDate(cert.not_valid_before)}</span>
+                                </div>
+                                <div class="cert-field">
+                                    <span class="cert-label">Valid Until:</span>
+                                    <span class="cert-value">${formatDate(cert.not_valid_after)}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            document.getElementById('contentBody').innerHTML = html;
+        }
+        
+        function displayVulnerabilities(result) {
+            let html = '';
+            
+            if (!result.vulnerabilities || Object.keys(result.vulnerabilities).length === 0) {
+                html = '<div class="empty-state">No vulnerability information available</div>';
+            } else {
+                const vulnLabels = {
+                    'heartbleed': 'Heartbleed',
+                    'openssl_ccs_injection': 'OpenSSL CCS Injection',
+                    'robot': 'ROBOT Attack',
+                    'crime_compression': 'CRIME (Compression)',
+                    'session_renegotiation': 'Session Renegotiation'
+                };
+                
+                Object.entries(result.vulnerabilities).forEach(([key, vuln]) => {
+                    const isVulnerable = key === 'session_renegotiation' ? vuln.client_initiated_vulnerable : vuln.vulnerable;
+                    
+                    html += `
+                        <div class="vuln-item">
+                            <div class="vuln-name">${vulnLabels[key] || key.replace('_', ' ')}</div>
+                            <div class="vuln-status ${isVulnerable ? 'vuln-vulnerable' : 'vuln-secure'}">
+                                ${vuln.status}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('contentBody').innerHTML = html;
+        }
+        
+        function displaySecurityFeatures(result) {
+            let html = '';
+            
+            if (!result.security_features || Object.keys(result.security_features).length === 0) {
+                html = '<div class="empty-state">No security features information available</div>';
+            } else {
+                if (result.security_features.fallback_scsv) {
+                    html += `
+                        <div class="feature-card">
+                            <div class="cert-field">
+                                <span class="cert-label">TLS Fallback SCSV:</span>
+                                <span class="cert-value">${result.security_features.fallback_scsv.status}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (result.security_features.http_headers) {
+                    html += `
+                        <div class="feature-card">
+                            <div class="cert-field">
+                                <span class="cert-label">HSTS:</span>
+                                <span class="cert-value">${result.security_features.http_headers.hsts ? 'Enabled' : 'Disabled'}</span>
+                            </div>
+                            <div class="cert-field">
+                                <span class="cert-label">HPKP:</span>
+                                <span class="cert-value">${result.security_features.http_headers.hpkp ? 'Enabled' : 'Disabled'}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (result.security_features.elliptic_curves && result.security_features.elliptic_curves.length > 0) {
+                    html += `
+                        <div class="feature-card">
+                            <div class="cert-label">Supported Elliptic Curves:</div>
+                            <div class="cipher-list">
+                    `;
+                    result.security_features.elliptic_curves.forEach(curve => {
+                        html += `<div class="cipher-item">${curve}</div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            }
+            
+            document.getElementById('contentBody').innerHTML = html;
+        }
+        
+        function displayPerformanceFeatures(result) {
+            let html = '';
+            
+            if (!result.performance_features || Object.keys(result.performance_features).length === 0) {
+                html = '<div class="empty-state">No performance features information available</div>';
+            } else {
+                if (result.performance_features.session_resumption) {
+                    const sr = result.performance_features.session_resumption;
+                    html += `
+                        <div class="feature-card">
+                            <div class="cert-field">
+                                <span class="cert-label">Session ID Resumption:</span>
+                                <span class="cert-value">${sr.session_id_resumption}</span>
+                            </div>
+                            <div class="cert-field">
+                                <span class="cert-label">TLS Ticket Resumption:</span>
+                                <span class="cert-value">${sr.tls_ticket_resumption}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (result.performance_features.tls_1_3_early_data) {
+                    html += `
+                        <div class="feature-card">
+                            <div class="cert-field">
+                                <span class="cert-label">TLS 1.3 Early Data:</span>
+                                <span class="cert-value">${result.performance_features.tls_1_3_early_data.status}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('contentBody').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
