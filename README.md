@@ -78,6 +78,10 @@ CipherAsh/
 
 ### Web Interface
 
+![Landing Page 1](./Media/1.png)
+
+![Landing Page 2](./Media/2.png)
+
 1. **Start the Application**
    ```bash
    python app.py
