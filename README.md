@@ -43,7 +43,8 @@ python app.py
 
 ```
 CipherAsh/
-├── app.py                 
+├── app.py
+├── static/                 
 ├── templates/
 │   └── index.html        
 ├── scanned_domains/       
