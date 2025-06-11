@@ -8,6 +8,9 @@ A comprehensive SSL/TLS security analysis tool with a modern web interface. Ciph
 [![GitHub Stars](https://img.shields.io/github/stars/DeepKariaX/Analysis-Alpaca-Researcher)](https://github.com/DeepKariaX/CipherAsh-SSL-Scanner/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/DeepKariaX/Analysis-Alpaca-Researcher)](https://github.com/DeepKariaX/CipherAsh-SSL-Scanner/network)
 
+![Landing Page 1](./Media/1.png)
+
+![Landing Page 2](./Media/2.png)
 
 ## 🚀 Quick Start
 
@@ -77,10 +80,6 @@ CipherAsh/
 ## 🚀 Usage
 
 ### Web Interface
-
-![Landing Page 1](./Media/1.png)
-
-![Landing Page 2](./Media/2.png)
 
 1. **Start the Application**
    ```bash
